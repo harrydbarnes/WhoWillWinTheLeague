@@ -16,8 +16,8 @@ Will the Gunners finally get their hands on the trophy? Or will the City machine
 
 As we enter the run-in, here's how the land lies:
 
-- **🔴 Arsenal (68 pts)**: Currently top of the pile, but looking nervously over their shoulder. Can they hold their nerve?
-- **🔵 Man City (67 pts)**: Breathing down Arsenal's neck. The inevitable winning streak machine is booting up. Be afraid.
+- **🔴 Arsenal (61 pts)**: Currently top of the pile, but looking nervously over their shoulder. Can they hold their nerve?
+- **🔵 Man City (56 pts)**: Breathing down Arsenal's neck. The inevitable winning streak machine is booting up. Be afraid.
 
 ## 🕹️ How It Works
 
