@@ -36,6 +36,7 @@ For the Tinder generation! This mode presents each fixture as a swipeable card.
 - **Swipe Right** for a Win! 👉✅ (Arsenal win / City win)
 - **Swipe Left** for a Loss! 👈❌ (Arsenal lose / City lose)
 - **Swipe Up** for a Draw! 👆🤝
+- Or use the on-screen buttons if your thumb is tired.
 - **The Reveal**: Once you've swiped through all fixtures, a dramatic **FINAL TABLE REVEAL** sequence plays out to show you who takes the crown! 🥁
 
 ## 📸 Share Your Predictions
