@@ -1,0 +1,2802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will Arsenal Bottle It (Again?!)?</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20height='24'%20viewBox='0%200%2024%2024'%20width='24'%20fill='red'%3E%3Cpath%20d='M0%200h24v24H0V0z'%20fill='none'/%3E%3Cpath%20d='M12%202L1%2021h22L12%202zm0%203.99L19.53%2019H4.47L12%205.99zM11%2016h2v2h-2zm0-6h2v4h-2z'/%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Barlow:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfMPFrI18IZB4sZ2KIKL8p2vB2J_T32TchX33iEnT2w/S/1/kOU3v/hS/3T/w==" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Updated Colors for Arsenal vs Man City */
+            --arsenal-red: #EF0107;
+            --city-blue: #6CABDD;
+            --navy: #063672; /* Arsenal Secondary */
+            --white: #FFFFFF;
+            --black: #000000;
+            --grey-light: #F5F5F5;
+            --grey-mid: #CCCCCC;
+            --grey-dark: #4A4A4A;
+            
+            --fdr-1: #00D084;
+            --fdr-2: #7FE87F;
+            --fdr-3: #FFE66D;
+            --fdr-4: #FF9052;
+            --fdr-5: #FF4757;
+
+            --win: #00D084;
+            --draw: #FFE66D;
+            --loss: #FF4757;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: var(--white);
+            padding: 40px 20px 200px; /* Added bottom padding for scroll space */
+            min-height: 100vh;
+        }
+
+        /* Intro Overlay */
+        #intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 1;
+            transition: opacity 1.5s ease;
+        }
+
+        #intro-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #intro-text {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            /* Layout Shift Fix: Reserve height for 2 lines + margins to prevent jumping */
+            min-height: 180px; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .intro-line {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            margin-bottom: 15px;
+        }
+
+        .intro-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            #intro-text {
+                font-size: 1.8rem;
+                min-height: 140px;
+            }
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.6rem; /* INCREASED SIZE */
+            color: var(--grey-mid);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .prediction-table-top {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .prediction-table-top h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #landing-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            transition: opacity 0.5s ease;
+        }
+
+        #landing-page.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #app-content {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: none;
+        }
+
+        #app-content.visible {
+            opacity: 1;
+            display: block;
+        }
+
+        /* Settings Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: rgba(30, 30, 50, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy pop */
+            position: relative;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--loss);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            background: #ff2e43;
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        .modal-content h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .toggle-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--grey-dark);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--win);
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--win);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .modal-hint {
+            color: var(--grey-mid);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .modal-btn {
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            background: #0060d0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Changed to auto-fit for responsive columns */
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .main-grid.hidden {
+            display: none;
+        }
+
+        .fixtures-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .prediction-table {
+            display: none;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 60px 60px;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+            align-items: center;
+        }
+
+        .table-row.champion {
+            background: rgba(255, 215, 0, 0.2); /* Gold */
+            border: 2px solid #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .table-row.runner-up {
+            background: rgba(192, 192, 192, 0.1); /* Silver */
+            border: 2px solid #C0C0C0;
+        }
+
+        .pos {
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .team-name-table {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .pts {
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .gd {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--grey-mid);
+        }
+
+        .team-fixtures {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideInUp 0.6s ease backwards;
+            height: 100%; /* Ensure full height */
+        }
+
+        .team-fixtures:nth-child(1) { animation-delay: 0.1s; }
+        .team-fixtures:nth-child(2) { animation-delay: 0.2s; }
+
+        .fixtures-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(10px);
+            border-radius: 12px 12px 0 0;
+            margin: -25px -25px 20px -25px;
+        }
+
+        .fixtures-header h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            letter-spacing: 1px;
+        }
+
+        /* Specific white glow for teams */
+        .fixtures-header h2.text-glow-white {
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+
+        .team-summary {
+            font-size: 1rem;
+            color: var(--grey-light);
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .fixture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .fixture {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .fixture.fdr-1 { border-left-color: var(--fdr-1); }
+        .fixture.fdr-2 { border-left-color: var(--fdr-2); }
+        .fixture.fdr-3 { border-left-color: var(--fdr-3); }
+        .fixture.fdr-4 { border-left-color: var(--fdr-4); }
+        .fixture.fdr-5 { border-left-color: var(--fdr-5); }
+
+        .fixture.result-W {
+            background: rgba(0, 208, 132, 0.15);
+        }
+
+        .fixture.result-D {
+            background: rgba(255, 230, 109, 0.15);
+        }
+
+        .fixture.result-L {
+            background: rgba(255, 71, 87, 0.15);
+        }
+
+        .fixture-date {
+            font-size: 0.75rem;
+            color: var(--grey-mid);
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+
+        .opponent {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .venue {
+            font-size: 0.8rem;
+            color: var(--grey-mid);
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+
+        .result-buttons {
+            display: flex;
+            gap: 4px;
+            justify-content: space-between;
+        }
+
+        .result-btn {
+            flex: 1;
+            padding: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .result-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .result-btn.active-W {
+            background: var(--win);
+            border-color: var(--win);
+            color: white;
+        }
+
+        .result-btn.active-D {
+            background: var(--draw);
+            border-color: var(--draw);
+            color: #333;
+        }
+
+        .result-btn.active-L {
+            background: var(--loss);
+            border-color: var(--loss);
+            color: white;
+        }
+
+        .fdr-legend {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 1s ease 0.5s backwards;
+        }
+
+        .fdr-legend h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .legend-items {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 4px;
+        }
+
+        .legend-text {
+            font-size: 0.85rem;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes jengaDrop {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 20px 10px rgba(255, 71, 87, 0);
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .fixture-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .prediction-table-top {
+                padding: 20px;
+            }
+        }
+
+        /* Floating Mini Table - Drawer Design */
+        .floating-mini-table {
+            position: fixed;
+            bottom: 20px; 
+            left: 50%;
+            transform: translateX(-50%) translateY(150%);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 24px;
+            padding: 15px 25px 30px 25px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 85%; /* IMPROVED: Narrower on mobile */
+            max-width: 340px; /* IMPROVED: Max width reduced */
+        }
+
+        .floating-mini-table.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Minimized State - Peeking Drawer */
+        .floating-mini-table.minimized {
+            transform: translateX(-50%) translateY(calc(100% - 50px));
+            cursor: pointer;
+        }
+        
+        .mini-table-minimize-btn {
+            position: absolute;
+            top: 50%; /* Center vertically in header */
+            transform: translateY(-50%);
+            left: 0;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            z-index: 10;
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            color: inherit;
+        }
+
+        .mini-table-minimize-btn:hover {
+            opacity: 1;
+        }
+
+        /* Rotate icon when minimized (flip from down to up) */
+        .floating-mini-table.minimized .mini-table-minimize-btn {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .floating-mini-table::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 24px;
+            background: linear-gradient(180deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                rgba(255, 255, 255, 0.02) 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .mini-table-header {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 2px;
+            font-weight: 600;
+            position: relative;
+            padding-top: 5px;
+            cursor: pointer;
+            display: flex; /* Flex centering */
+            justify-content: center;
+            align-items: center;
+            min-height: 30px; /* Ensure space for buttons */
+        }
+
+        .mini-table-pin {
+            position: absolute;
+            top: 50%; /* Center vertically in header */
+            transform: translateY(-50%);
+            right: 0; 
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+            font-size: 1.2rem;
+        }
+        .mini-table-pin:hover { opacity: 1; }
+        .mini-table-pin.active { opacity: 1; text-shadow: 0 0 10px white; transform: translateY(-50%) rotate(45deg); }
+
+        .mini-table-row {
+            display: grid;
+            grid-template-columns: 30px 1fr 50px;
+            gap: 8px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .mini-table-row:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .mini-table-row.champion {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .mini-table-row.runner-up {
+            background: rgba(192, 192, 192, 0.2);
+            border: 1px solid rgba(192, 192, 192, 0.4);
+        }
+
+        .mini-pos {
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .mini-team-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .mini-pts {
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .mini-table-arrow {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            animation: bounce 1.5s ease-in-out infinite;
+            display: none; /* Hide old arrow completely */
+        }
+
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            padding: 0; /* Reset button padding */
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .scroll-to-top.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .scroll-to-top:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .scroll-to-top::before {
+            content: '↑';
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Mode Selector */
+        .mode-selector {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            animation: fadeIn 1s ease 0.6s backwards;
+        }
+
+        .mode-selector h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .mode-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .mode-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-btn.active {
+            background: rgba(0, 208, 132, 0.2);
+            border-color: var(--win);
+            box-shadow: 0 0 20px rgba(0, 208, 132, 0.3);
+        }
+
+        .mode-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .mode-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .mode-desc {
+            font-size: 0.9rem;
+            color: var(--grey-mid);
+        }
+
+        /* Swipe Mode Container */
+        .swipe-container {
+            display: none;
+            max-width: 1000px; /* Increased width to prevent cutoff */
+            margin: 0 auto;
+            padding: 20px;
+            height: 100vh;
+            /* overflow: hidden; Removed to prevent clipping */
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .swipe-container.active {
+            display: flex;
+        }
+
+        /* Swipe Mode Animations */
+        .swipe-container.active .swipe-progress {
+            animation: slideInDown 0.5s ease backwards;
+        }
+        
+        .swipe-container.active .swipe-card-wrapper {
+            animation: zoomIn 0.5s ease 0.2s backwards;
+        }
+        
+        .swipe-container.active .swipe-actions {
+            animation: slideInUp 0.5s ease 0.4s backwards;
+        }
+
+        /* Updated Swipe Exit Button - Integrated into layout */
+        .swipe-exit-btn {
+            position: absolute; /* Changed to absolute to pin right */
+            right: 0;           /* Pin to right */
+            top: 50%;           /* Center vertically */
+            transform: translateY(-50%); /* Center correction */
+            background: var(--loss);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 44px; /* Matches back button size */
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .swipe-exit-btn:hover {
+            background: #ff2e43;
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Added Focus Fix */
+        #swipe-container:focus {
+            outline: none;
+        }
+
+        /* Hide other elements in swipe mode */
+        body.swipe-mode-active .app-header, /* CHANGED: Only hide app header */
+        body.swipe-mode-active .prediction-table-top,
+        body.swipe-mode-active .controls,
+        /* body.swipe-mode-active .mode-selector, REMOVED to fix entry glitch */
+        body.swipe-mode-active .fdr-legend,
+        body.swipe-mode-active .floating-mini-table {
+            display: none;
+        }
+
+        .swipe-progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.2rem;
+            color: var(--grey-mid);
+            position: relative;
+        }
+
+        .swipe-progress .current {
+            color: var(--win);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .swipe-back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            transition: all 0.3s ease;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .swipe-back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .swipe-back-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .swipe-back-btn:disabled:hover {
+            transform: none;
+        }
+
+        .swipe-progress-text {
+            text-align: center;
+        }
+
+        .swipe-card-wrapper {
+            position: relative;
+            height: 500px;
+            perspective: 1000px;
+            max-height: 60vh;
+            max-width: 450px; /* Constrain width on desktop */
+            width: 100%;      /* Added: Ensure it fills space up to max-width */
+            margin: 0 auto;   /* Center it */
+        }
+
+        .swipe-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            /* Background moved to ::before to fix blurry text */
+            border-radius: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: grab;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            z-index: 1;
+            overflow: hidden; /* Contains the pseudo element */
+            touch-action: none; /* IMPROVED: Locks scroll on mobile swipe */
+        }
+
+        .swipe-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: -1;
+        }
+
+        .swipe-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 6rem;
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .swipe-card.show-win::after {
+            content: 'W';
+            color: var(--win);
+            opacity: 0.7;
+            font-size: 10rem;
+            text-shadow: 0 0 40px var(--win);
+        }
+
+        .swipe-card.show-win {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 
+                        inset 0 0 100px rgba(0, 208, 132, 0.2);
+        }
+
+        .swipe-card.show-draw::after {
+            content: 'D';
+            color: var(--draw);
+            opacity: 0.7;
+            font-size: 10rem;
+            text-shadow: 0 0 40px var(--draw);
+        }
+
+        .swipe-card.show-draw {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 
+                        inset 0 0 100px rgba(255, 230, 109, 0.2);
+        }
+
+        .swipe-card.show-loss::after {
+            content: 'L';
+            color: var(--loss);
+            opacity: 0.7;
+            font-size: 10rem;
+            text-shadow: 0 0 40px var(--loss);
+        }
+
+        .swipe-card.show-loss {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 
+                        inset 0 0 100px rgba(255, 71, 87, 0.2);
+        }
+
+        .swipe-card:active {
+            cursor: grabbing;
+        }
+
+        .swipe-card.swiping {
+            transition: none;
+            filter: brightness(0.5);
+        }
+
+        .swipe-card.swipe-left {
+            transform: translateX(-150%) rotate(-30deg);
+            opacity: 0;
+        }
+
+        .swipe-card.swipe-right {
+            transform: translateX(150%) rotate(30deg);
+            opacity: 0;
+        }
+
+        .swipe-card.swipe-up {
+            transform: translateY(-150%) rotate(10deg);
+            opacity: 0;
+        }
+
+        .card-team {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            color: var(--grey-mid);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .card-fixture {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .card-venue {
+            font-size: 1.2rem;
+            color: var(--grey-mid);
+            margin-bottom: 20px;
+        }
+
+        .card-fdr {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .card-date {
+            font-size: 1rem;
+            color: var(--grey-light);
+            margin-top: 20px;
+        }
+
+        .swipe-actions {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .swipe-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .swipe-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .swipe-btn.loss {
+            border-color: var(--loss);
+            color: var(--loss);
+        }
+
+        .swipe-btn.loss:hover {
+            background: var(--loss);
+            color: white;
+        }
+
+        .swipe-btn.draw {
+            border-color: var(--draw);
+            color: var(--draw);
+        }
+
+        .swipe-btn.draw:hover {
+            background: var(--draw);
+            color: #333;
+        }
+
+        .swipe-btn.win {
+            border-color: var(--win);
+            color: var(--win);
+        }
+
+        .swipe-btn.win:hover {
+            background: var(--win);
+            color: white;
+        }
+
+        .swipe-hint {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--grey-mid);
+            font-size: 0.9rem;
+        }
+
+        /* Dramatic Reveal */
+        .reveal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .reveal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .reveal-content {
+            max-width: 800px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(30px);
+            border-radius: 24px;
+            padding: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            animation: revealPop 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .reveal-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 3rem;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .reveal-table {
+            margin-bottom: 30px;
+        }
+
+        .reveal-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 80px;
+            gap: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            align-items: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: revealRow 0.5s ease forwards;
+        }
+
+        .reveal-row:nth-child(1) { animation-delay: 0.2s; }
+        .reveal-row:nth-child(2) { animation-delay: 0.4s; }
+
+        .reveal-row.champion {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            animation: revealRowChampion 0.5s ease forwards, pulseChampion 2s ease-in-out infinite;
+            animation-delay: 0.8s, 1.3s;
+        }
+
+        .reveal-pos {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .reveal-team {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .reveal-pts {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .reveal-message {
+            font-size: 1.3rem;
+            color: var(--win);
+            margin-bottom: 30px;
+            font-weight: 600;
+            transition: all 0.5s ease;
+        }
+
+        .reveal-message.drumroll {
+            animation: drumrollPulse 0.6s ease-in-out infinite;
+            color: var(--fdr-3);
+        }
+
+        .reveal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .reveal-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reveal-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .reveal-btn.share-btn {
+            background: var(--win);
+            border-color: var(--win);
+        }
+
+        @keyframes revealPop {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes revealRow {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes revealRowChampion {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1.05);
+            }
+        }
+
+        @keyframes pulseChampion {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 30px 15px rgba(255, 215, 0, 0);
+            }
+        }
+
+        @keyframes drumrollPulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .floating-mini-table {
+                min-width: 300px;
+                padding: 15px 20px;
+                bottom: 20px;
+            }
+
+            .scroll-to-top {
+                width: 48px;
+                height: 48px;
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .fixtures-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .swipe-card {
+                padding: 30px;
+            }
+
+            .card-fixture {
+                font-size: 2.5rem;
+            }
+
+            .swipe-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .reveal-content {
+                padding: 30px;
+            }
+
+            .reveal-title {
+                font-size: 2rem;
+            }
+
+            /* NEW: Adjust Swipe Layout for Mobile to reduce top space */
+            .swipe-container {
+                justify-content: flex-start;
+                padding-top: 60px; /* Space for the exit button but higher up */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-overlay">
+       <div id="intro-text"></div>
+       <button id="intro-close-btn" class="modal-close-btn" aria-label="Skip Intro" style="display: none;"><span aria-hidden="true">✕</span></button>
+    </div>
+
+    <div id="landing-page">
+        <header>
+            <h1>Will Arsenal Bottle It (Again?!)?</h1>
+            <p class="subtitle">Premier League Title Race 2025/26</p>
+        </header>
+
+        <div class="mode-selector">
+            <h3>Choose Your Prediction Mode</h3>
+            <div class="mode-buttons">
+                <div class="mode-btn" id="mode-fixture">
+                    <div class="mode-icon">📋</div>
+                    <div class="mode-title">Fixture List</div>
+                    <div class="mode-desc">Click through all fixtures at your own pace</div>
+                </div>
+                <div class="mode-btn" id="mode-swipe">
+                    <div class="mode-icon">👆</div>
+                    <div class="mode-title">Swipe Mode</div>
+                    <div class="mode-desc">Tinder-style swipe & dramatic reveal at the end</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="btn-close-settings" title="Close" aria-label="Close settings"><span aria-hidden="true">✕</span></button>
+            
+            <h3>How do you want to play?</h3>
+            <div class="toggle-container">
+                <span class="toggle-label" style="color: var(--win)">Show Table</span>
+                <label class="switch">
+                    <input type="checkbox" id="surprise-mode-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <span class="toggle-label" style="color: var(--city-blue)">Surprise Me!</span>
+            </div>
+            <p class="modal-hint">Surprise mode masks the table until the very end.</p>
+            <button id="btn-start-fixture" class="modal-btn">Start Predicting</button>
+        </div>
+    </div>
+
+    <div id="app-content">
+        <div class="container">
+            <header class="app-header">
+                <h1>Will Arsenal Bottle It (Again?!)?</h1>
+            </header>
+
+            <div class="prediction-table-top">
+                <h2>Can Arsenal Hold On?</h2>
+                <div id="final-table-top"></div>
+            </div>
+
+            <div class="controls">
+                <button class="control-btn" id="btn-back-menu">Back to Menu</button>
+                <button class="control-btn" id="btn-reset-all">Reset All</button>
+            </div>
+
+            <div class="fdr-legend" id="fdr-legend">
+                <h3>Fixture Difficulty Rating (FDR) | Click W/D/L to Predict Results</h3>
+                <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--fdr-1);"></div>
+                    <div class="legend-text">1 - Very Easy</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--fdr-2);"></div>
+                    <div class="legend-text">2 - Easy</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--fdr-3);"></div>
+                    <div class="legend-text">3 - Moderate</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--fdr-4);"></div>
+                    <div class="legend-text">4 - Difficult</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: var(--fdr-5);"></div>
+                    <div class="legend-text">5 - Very Difficult</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="swipe-container" id="swipe-container" tabindex="-1">
+            <div class="swipe-progress">
+                <button class="swipe-back-btn" id="swipe-back-btn" title="Go back" aria-label="Go to previous card"><span aria-hidden="true">←</span></button>
+                <div class="swipe-progress-text">
+                    <div><span class="current" id="swipe-current">1</span> / <span id="swipe-total">16</span></div>
+                    <div class="swipe-hint" style="margin-top: 10px; font-size: 0.9rem;">
+                        Swipe or use Arrow Keys (← Loss, ↑ Draw, → Win)
+                    </div>
+                </div>
+                <button class="swipe-exit-btn" id="btn-exit-swipe" title="Exit Swipe Mode" aria-label="Exit Swipe Mode"><span aria-hidden="true">✕</span></button>
+            </div>
+            
+            <div class="swipe-card-wrapper" id="card-wrapper">
+                </div>
+
+            <div class="swipe-actions">
+                <button class="swipe-btn loss" id="btn-swipe-loss" title="Loss" aria-label="Predict Loss"><span aria-hidden="true">L</span></button>
+                <button class="swipe-btn draw" id="btn-swipe-draw" title="Draw" aria-label="Predict Draw"><span aria-hidden="true">D</span></button>
+                <button class="swipe-btn win" id="btn-swipe-win" title="Win" aria-label="Predict Win"><span aria-hidden="true">W</span></button>
+            </div>
+        </div>
+
+        <div class="main-grid" id="main-grid">
+            <div class="fixtures-column">
+                <div class="team-fixtures">
+                    <div class="fixtures-header">
+                        <h2 class="text-glow-white" style="color: var(--arsenal-red);">🔴 Arsenal</h2>
+                        <div class="team-summary">
+                            <span id="arsenal-summary">Current: 75 pts</span>
+                        </div>
+                    </div>
+                    <div class="fixture-grid" id="arsenal-fixtures"></div>
+                </div>
+
+                <div class="team-fixtures">
+                    <div class="fixtures-header">
+                        <h2 style="color: var(--city-blue);">🔵 Man City</h2>
+                        <div class="team-summary">
+                            <span id="man-city-summary">Current: 74 pts</span>
+                        </div>
+                    </div>
+                    <div class="fixture-grid" id="man-city-fixtures"></div>
+                </div>
+            </div>
+
+            <div class="prediction-table">
+                <h2>Can Arsenal Hold On?</h2>
+                <div id="final-table"></div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="floating-mini-table" id="floatingTable">
+        <div class="mini-table-header">
+            <button class="mini-table-minimize-btn" id="btn-minimize-table" aria-label="Minimize table" type="button"><span aria-hidden="true">▼</span></button>
+            <span class="header-text">Live Standings</span>
+            <span class="mini-table-pin" id="pin-btn" aria-label="Pin table">📌</span>
+        </div>
+        <div id="mini-table-content"></div>
+    </div>
+
+    <button class="scroll-to-top" id="scrollToTop" aria-label="Scroll to top" type="button"></button>
+
+    <div class="reveal-overlay" id="reveal-overlay">
+        <div class="reveal-content" id="reveal-content-box">
+            <div class="reveal-title">Final Table</div>
+            <div class="reveal-message" id="reveal-message"></div>
+            <div class="reveal-table" id="reveal-table"></div>
+            <div class="reveal-actions" id="reveal-actions">
+                <button class="reveal-btn" id="btn-close-reveal">Close</button>
+                <button class="reveal-btn share-btn" id="btn-share-prediction">Share Prediction 📸</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// --- Intro Sequence Logic ---
+function initIntro() {
+    const hasVisited = localStorage.getItem('hasVisitedSiteTitleRace');
+    const introOverlay = document.getElementById('intro-overlay');
+    const introText = document.getElementById('intro-text');
+    const introCloseBtn = document.getElementById('intro-close-btn');
+    
+    // Helper to create and fade lines
+    const addLine = (text) => {
+        const line = document.createElement('div');
+        line.className = 'intro-line';
+        line.textContent = text;
+        introText.appendChild(line);
+        // Force reflow
+        void line.offsetWidth;
+        line.classList.add('visible');
+    };
+
+    // Helper to pre-fill lines invisibly
+    const createLine = (text) => {
+        const line = document.createElement('div');
+        line.className = 'intro-line';
+        line.textContent = text;
+        return line;
+    };
+
+    const clearText = () => {
+        introText.innerHTML = '';
+    };
+
+    const finishIntro = () => {
+        introOverlay.classList.add('hidden');
+        setTimeout(() => {
+            introOverlay.style.display = 'none';
+        }, 1500);
+        localStorage.setItem('hasVisitedSiteTitleRace', 'true');
+    };
+
+    // If visited, show close button
+    if (hasVisited) {
+        introCloseBtn.style.display = 'flex';
+        introCloseBtn.addEventListener('click', () => {
+            // Kill animations? Simplest is just hide overlay immediately
+            introOverlay.style.display = 'none';
+        });
+    }
+
+    // Sequence
+    setTimeout(() => {
+        const line1 = createLine("It's happening again.");
+        const line2 = createLine("They're so close.");
+        introText.appendChild(line1);
+        introText.appendChild(line2);
+        
+        void line1.offsetWidth;
+        line1.classList.add('visible');
+    }, 500);
+
+    setTimeout(() => {
+        introText.children[1].classList.add('visible');
+    }, 2000);
+    
+    setTimeout(() => {
+        // Fade out text
+        Array.from(introText.children).forEach(child => child.classList.remove('visible'));
+    }, 4000);
+
+    setTimeout(() => {
+        clearText();
+        const line3 = createLine("Will they bottle it?");
+        const line4 = createLine("Or make history?");
+        introText.appendChild(line3);
+        introText.appendChild(line4);
+        
+        void line3.offsetWidth;
+        line3.classList.add('visible');
+    }, 5000);
+
+    setTimeout(() => {
+        introText.children[1].classList.add('visible');
+    }, 6000);
+
+    setTimeout(() => {
+        Array.from(introText.children).forEach(child => child.classList.remove('visible'));
+    }, 7500);
+
+    setTimeout(() => {
+        clearText();
+        addLine("Let's predict the title race...");
+    }, 8500);
+
+    setTimeout(() => {
+        finishIntro();
+    }, 10500);
+}
+
+// Run Intro on Load
+window.addEventListener('load', initIntro);
+
+
+/**
+ * Will Arsenal Bottle It (Again?!)? - Configuration & Logic
+ */
+
+const CONFIG = {
+    CHAMPION_INDEX: 0, // 1st place
+    SWIPE_THRESHOLD: 80,
+    SWIPE_VISUAL_THRESHOLD: 40,
+    SWIPE_ANIMATION_MS: 300,
+    ANIMATION_DELAY_BASE: 0.05,
+    SWIPE_KEY_DEBOUNCE_MS: 300,
+    SCROLL_THRESHOLD: 300,
+    MINI_TABLE_TIMEOUT_MS: 4000
+};
+
+// NOTE: Simulation data for the 2025/26 Title Race
+const TEAMS_DATA = {
+    'arsenal': {
+        name: 'Arsenal',
+        currentPoints: 68,
+        currentGD: 48,
+        fixtures: [
+            { date: 'Mar 8', opponent: 'Man United', venue: 'H', fdr: 4 },
+            { date: 'Mar 15', opponent: 'Chelsea', venue: 'A', fdr: 5 },
+            { date: 'Mar 29', opponent: 'Man City', venue: 'A', fdr: 5 },
+            { date: 'Apr 5', opponent: 'Everton', venue: 'H', fdr: 2 },
+            { date: 'Apr 12', opponent: 'Newcastle', venue: 'A', fdr: 4 },
+            { date: 'Apr 19', opponent: 'Aston Villa', venue: 'H', fdr: 3 },
+            { date: 'Apr 26', opponent: 'Spurs', venue: 'A', fdr: 5 },
+            { date: 'May 3', opponent: 'Bournemouth', venue: 'H', fdr: 2 },
+            { date: 'May 10', opponent: 'Liverpool', venue: 'A', fdr: 5 },
+            { date: 'May 17', opponent: 'Southampton', venue: 'H', fdr: 1 }
+        ]
+    },
+    'man-city': {
+        name: 'Man City',
+        currentPoints: 67,
+        currentGD: 45,
+        fixtures: [
+            { date: 'Mar 8', opponent: 'Liverpool', venue: 'H', fdr: 5 },
+            { date: 'Mar 15', opponent: 'Brighton', venue: 'A', fdr: 3 },
+            { date: 'Mar 29', opponent: 'Arsenal', venue: 'H', fdr: 5 },
+            { date: 'Apr 5', opponent: 'Aston Villa', venue: 'H', fdr: 3 },
+            { date: 'Apr 12', opponent: 'Palace', venue: 'A', fdr: 2 },
+            { date: 'Apr 19', opponent: 'Brentford', venue: 'H', fdr: 2 },
+            { date: 'Apr 26', opponent: 'Forest', venue: 'A', fdr: 2 },
+            { date: 'May 3', opponent: 'Wolves', venue: 'H', fdr: 2 },
+            { date: 'May 10', opponent: 'Fulham', venue: 'A', fdr: 3 },
+            { date: 'May 17', opponent: 'West Ham', venue: 'H', fdr: 3 }
+        ]
+    }
+};
+
+class TitleRaceSimulator {
+    constructor(teamsData) {
+        this.teams = teamsData;
+        this.results = {};
+        this.currentMode = 'fixture';
+        this.swipeCardData = [];
+        this.currentCardIndex = 0;
+        this.isMiniTablePinned = false;
+        this.miniTableTimeout = null;
+        this.isSwipingKey = false; // Debounce flag for keyboard swipe
+        this.minimizeCount = 0; // NEW: Track how many times user minimized
+        this.surpriseMode = false; // NEW: Track surprise mode state
+
+        // Bind global event handlers to preserve 'this' context and allow removal
+        this.boundHandleSwipeKeydown = this.handleSwipeKeydown.bind(this);
+        this.boundHandlePinClick = this.handlePinClick.bind(this);
+        this.boundHandleScroll = this.handleScroll.bind(this);
+
+        this.init();
+    }
+
+    init() {
+        this.initializeResults();
+        this.bindEvents();
+        this.renderFixtures();
+        this.updateTable();
+    }
+
+    destroy() {
+        document.removeEventListener('keydown', this.boundHandleSwipeKeydown);
+        document.removeEventListener('click', this.boundHandlePinClick);
+        window.removeEventListener('scroll', this.boundHandleScroll);
+    }
+
+    initializeResults() {
+        for (let team in this.teams) {
+            this.results[team] = this.teams[team].fixtures.map(() => null);
+        }
+    }
+
+    bindEvents() {
+        // Document level keydown for Swipe Mode
+        document.addEventListener('keydown', this.boundHandleSwipeKeydown);
+
+        // Mode buttons
+        document.getElementById('mode-fixture').addEventListener('click', () => this.startApp('fixture'));
+        document.getElementById('mode-swipe').addEventListener('click', () => this.startApp('swipe'));
+
+        // Settings Modal Start Button
+        document.getElementById('btn-start-fixture').addEventListener('click', () => this.handleFixtureStart());
+        
+        // Settings Modal Close Button
+        document.getElementById('btn-close-settings').addEventListener('click', () => {
+            document.getElementById('settings-modal').classList.remove('show');
+            // If they close without choosing, we go back to landing? Or just sit there?
+            // User requested closing goes back to menu (Landing) essentially canceling start
+            this.showLanding(); 
+        });
+
+        // Controls
+        document.getElementById('btn-back-menu').addEventListener('click', () => this.showLanding());
+        document.getElementById('btn-reset-all').addEventListener('click', () => this.resetAll());
+
+        // Swipe mode controls
+        // UPDATED: Exit button now goes to Landing Page (Mode Selection)
+        document.getElementById('btn-exit-swipe').addEventListener('click', () => this.showLanding());
+        document.getElementById('swipe-back-btn').addEventListener('click', () => this.goBackSwipe());
+        document.getElementById('btn-swipe-loss').addEventListener('click', () => this.swipeCard('L'));
+        document.getElementById('btn-swipe-draw').addEventListener('click', () => this.swipeCard('D'));
+        document.getElementById('btn-swipe-win').addEventListener('click', () => this.swipeCard('W'));
+
+        // Scroll to top
+        document.getElementById('scrollToTop').addEventListener('click', () => this.scrollToTop());
+
+        // Reveal overlay
+        document.getElementById('btn-close-reveal').addEventListener('click', () => this.closeReveal());
+        document.getElementById('btn-share-prediction').addEventListener('click', () => this.sharePrediction());
+
+        // Mini table minimize
+        document.getElementById('btn-minimize-table').addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent bubbling to header click
+            this.toggleMiniTableMinimize();
+        });
+        
+        // Click on mini table header to toggle
+        document.querySelector('.mini-table-header').addEventListener('click', (e) => {
+            // Only toggle if we didn't click a button
+            if (!e.target.closest('.mini-table-minimize-btn') && !e.target.closest('.mini-table-pin')) {
+                const table = document.getElementById('floatingTable');
+                this.toggleMiniTableMinimize();
+            }
+        });
+
+        // Delegation for result buttons
+        document.getElementById('main-grid').addEventListener('click', (e) => {
+            if (e.target.matches('.result-btn')) {
+                const team = e.target.dataset.team;
+                const index = parseInt(e.target.dataset.index, 10);
+                const result = e.target.dataset.result;
+                this.setResult(team, index, result);
+            }
+        });
+
+        // Delegation for dynamically added pin button
+        document.getElementById('floatingTable').addEventListener('click', this.boundHandlePinClick);
+
+        // Scroll listener
+        window.addEventListener('scroll', this.boundHandleScroll);
+    }
+
+    handlePinClick(e) {
+        if (e.target.matches('#pin-btn')) {
+            e.stopPropagation(); // Prevent header click toggle
+            this.toggleMiniTablePin();
+        }
+    }
+
+    handleScroll() {
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+        if (window.pageYOffset > CONFIG.SCROLL_THRESHOLD) {
+            scrollToTopBtn.classList.add('show');
+        } else {
+            scrollToTopBtn.classList.remove('show');
+        }
+    }
+
+    handleSwipeKeydown(e) {
+        if (this.currentMode !== 'swipe') return;
+
+        // Prevent default scrolling behaviour for arrow keys
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp'].includes(e.key)) {
+            e.preventDefault();
+
+            // Debounce to prevent accidental double-swipes
+            if (this.isSwipingKey) return;
+            this.isSwipingKey = true;
+
+            // Execute swipe
+            if (e.key === 'ArrowLeft') this.swipeCard('L', 'left');
+            if (e.key === 'ArrowRight') this.swipeCard('W', 'right');
+            if (e.key === 'ArrowUp') this.swipeCard('D', 'up');
+
+            // Release debounce
+            setTimeout(() => { this.isSwipingKey = false; }, CONFIG.SWIPE_KEY_DEBOUNCE_MS);
+        }
+    }
+
+    renderFixtures() {
+        for (let teamKey in this.teams) {
+            const team = this.teams[teamKey];
+            const container = document.getElementById(`${teamKey}-fixtures`);
+            if (!container) continue;
+
+            // Check if we need to build from scratch
+            const isInitialBuild = container.children.length === 0;
+
+            if (isInitialBuild) {
+                team.fixtures.forEach((fixture, index) => {
+                    const fixtureDiv = document.createElement('div');
+                    fixtureDiv.className = `fixture fdr-${fixture.fdr}`;
+                    fixtureDiv.style.animation = `jengaDrop 0.5s ease backwards ${index * CONFIG.ANIMATION_DELAY_BASE}s`;
+
+                    const result = this.results[teamKey][index];
+                    if (result) {
+                        fixtureDiv.classList.add(`result-${result}`);
+                    }
+
+                    fixtureDiv.innerHTML = `
+                        <div class="fixture-date">${fixture.date}</div>
+                        <div class="opponent">${fixture.opponent}</div>
+                        <div class="venue ${fixture.venue === 'H' ? 'home' : 'away'}">
+                            ${fixture.venue === 'H' ? 'Home' : 'Away'}
+                        </div>
+                        <div class="result-buttons">
+                            <button class="result-btn ${result === 'W' ? 'active-W' : ''}"
+                                    data-team="${teamKey}" data-index="${index}" data-result="W"
+                                    aria-pressed="${result === 'W' ? 'true' : 'false'}" aria-label="Win">W</button>
+                            <button class="result-btn ${result === 'D' ? 'active-D' : ''}"
+                                    data-team="${teamKey}" data-index="${index}" data-result="D"
+                                    aria-pressed="${result === 'D' ? 'true' : 'false'}" aria-label="Draw">D</button>
+                            <button class="result-btn ${result === 'L' ? 'active-L' : ''}"
+                                    data-team="${teamKey}" data-index="${index}" data-result="L"
+                                    aria-pressed="${result === 'L' ? 'true' : 'false'}" aria-label="Loss">L</button>
+                        </div>
+                    `;
+                    container.appendChild(fixtureDiv);
+                });
+            } else {
+                // Update existing elements to prevent re-animation
+                team.fixtures.forEach((_, index) => {
+                    this.updateFixtureUI(teamKey, index);
+                });
+            }
+        }
+    }
+
+    updateFixtureUI(teamKey, index) {
+        const container = document.getElementById(`${teamKey}-fixtures`);
+        if (!container || !container.children[index]) return;
+
+        const fixtureDiv = container.children[index];
+        const fixture = this.teams[teamKey].fixtures[index];
+        const result = this.results[teamKey][index];
+
+        // Update classes
+        fixtureDiv.className = `fixture fdr-${fixture.fdr}`;
+        if (result) fixtureDiv.classList.add(`result-${result}`);
+
+        // Update buttons only
+        const btns = fixtureDiv.getElementsByClassName('result-btn');
+        if (btns.length >= 3) {
+            this.updateButtonState(btns[0], result === 'W');
+            this.updateButtonState(btns[1], result === 'D');
+            this.updateButtonState(btns[2], result === 'L');
+        }
+    }
+
+    updateButtonState(btn, isActive) {
+        // Preserve base classes and add active state if needed
+        const baseClass = 'result-btn';
+        let activeClass = '';
+        if (isActive) {
+            const resultType = btn.dataset.result;
+            activeClass = ` active-${resultType}`;
+        }
+        btn.className = `${baseClass}${activeClass}`;
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    }
+
+    checkAllPredictionsMade() {
+        return Object.values(this.results).every(teamResults =>
+            teamResults.every(r => r !== null)
+        );
+    }
+
+    setResult(team, fixtureIndex, result) {
+        const prevStandings = this.calculateStandings();
+
+        if (this.results[team][fixtureIndex] === result) {
+            this.results[team][fixtureIndex] = null;
+        } else {
+            this.results[team][fixtureIndex] = result;
+        }
+
+        const currStandings = this.calculateStandings();
+
+        this.updateFixtureUI(team, fixtureIndex);
+        this.updateTable(currStandings);
+        this.showFloatingTable(prevStandings, currStandings);
+
+        if (this.checkAllPredictionsMade()) {
+            setTimeout(() => this.showDramaticReveal(), 1000);
+        }
+    }
+
+    calculatePoints(teamKey) {
+        let points = this.teams[teamKey].currentPoints;
+        let gd = this.teams[teamKey].currentGD;
+
+        this.results[teamKey].forEach((result, index) => {
+            if (result === 'W') {
+                points += 3;
+                gd += 2; // Simplified GD calculation
+            } else if (result === 'D') {
+                points += 1;
+            } else if (result === 'L') {
+                gd -= 1; // Simplified GD calculation
+            }
+        });
+
+        return { points, gd };
+    }
+
+    calculateStandings() {
+        const tableData = [];
+
+        for (let teamKey in this.teams) {
+            const { points, gd } = this.calculatePoints(teamKey);
+            tableData.push({
+                teamKey: teamKey,
+                name: this.teams[teamKey].name,
+                points,
+                gd
+            });
+        }
+
+        // Sort by points, then GD
+        tableData.sort((a, b) => {
+            if (b.points !== a.points) return b.points - a.points;
+            return b.gd - a.gd;
+        });
+
+        return tableData;
+    }
+
+    updateTable(tableData = null) {
+        const tableContainer = document.getElementById('final-table-top');
+        if (!tableContainer) return;
+
+        // Check surprise mode
+        if (this.surpriseMode) {
+             tableContainer.innerHTML = '';
+             // Masked Table - create dummy rows
+             const dummyTeams = ['Team A', 'Team B']; // Just for count
+             dummyTeams.forEach((_, index) => {
+                 const row = document.createElement('div');
+                 row.className = 'table-row';
+                 row.innerHTML = `
+                    <div class="pos">?</div>
+                    <div class="team-name-table">??????</div>
+                    <div class="pts">??</div>
+                    <div class="gd">?</div>
+                 `;
+                 tableContainer.appendChild(row);
+             });
+             
+             // Hide summaries
+             for (let teamKey in this.teams) {
+                const summaryEl = document.getElementById(`${teamKey}-summary`);
+                if (summaryEl) summaryEl.innerHTML = 'Predicted: ??? pts';
+            }
+            return;
+        }
+
+        if (!tableData) {
+            tableData = this.calculateStandings();
+        }
+
+        // Update summaries first
+        for (let teamKey in this.teams) {
+            const { points } = this.calculatePoints(teamKey);
+            const totalFixtures = this.teams[teamKey].fixtures.length;
+            const played = this.results[teamKey].filter(r => r !== null).length;
+            const summaryEl = document.getElementById(`${teamKey}-summary`);
+            if (summaryEl) {
+                summaryEl.innerHTML = `Predicted: <strong>${points} pts</strong> (${played}/${totalFixtures} played)`;
+            }
+        }
+
+        tableContainer.innerHTML = '';
+
+        tableData.forEach((team, index) => {
+            const position = index + 1;
+            const rowDiv = document.createElement('div');
+
+            // Determine if Champion
+            let rowClass = 'table-row';
+            if (index === CONFIG.CHAMPION_INDEX) {
+                rowClass += ' champion';
+            } else {
+                rowClass += ' runner-up';
+            }
+
+            rowDiv.className = rowClass;
+            rowDiv.innerHTML = `
+                <div class="pos">${position}</div>
+                <div class="team-name-table">${team.name}</div>
+                <div class="pts">${team.points}</div>
+                <div class="gd">${team.gd > 0 ? '+' : ''}${team.gd}</div>
+            `;
+
+            tableContainer.appendChild(rowDiv);
+        });
+    }
+
+    resetAll() {
+        this.initializeResults();
+        this.renderFixtures();
+        this.updateTable();
+        if (this.currentMode === 'swipe') {
+            this.generateSwipeCards();
+        }
+    }
+
+    startApp(mode) {
+        // Intercept fixture mode to show settings
+        if (mode === 'fixture') {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = 'flex';
+            // Force reflow
+            void modal.offsetWidth; 
+            modal.classList.add('show');
+            return;
+        }
+
+        // IMPROVED: Use callback pattern for smooth transition
+        this.transitionToApp(() => this.setMode(mode));
+    }
+    
+    handleFixtureStart() {
+        const isSurprise = document.getElementById('surprise-mode-toggle').checked;
+        this.surpriseMode = isSurprise;
+        document.getElementById('settings-modal').classList.remove('show');
+        // Wait for fade out
+        setTimeout(() => {
+             document.getElementById('settings-modal').style.display = 'none';
+             // IMPROVED: Use callback pattern
+             this.transitionToApp(() => {
+                 this.setMode('fixture');
+                 this.updateTable();
+             });
+        }, 300);
+    }
+
+    transitionToApp(callback) { // IMPROVED: Added callback param
+        const landing = document.getElementById('landing-page');
+        const app = document.getElementById('app-content');
+
+        landing.classList.add('hidden');
+
+        setTimeout(() => {
+            landing.style.display = 'none';
+            if (callback) callback(); // Execute logic while screen is hidden
+            app.style.display = ''; // CRITICAL FIX: Clear inline 'none'
+            app.classList.add('visible');
+        }, 500);
+    }
+
+    showLanding() {
+        // FIXED: Clean up swipe mode state properly
+        // document.body.classList.remove('swipe-mode-active'); // Moved to after fade out
+        document.body.style.overflow = 'auto';
+        
+        // Reset surprise mode default
+        this.surpriseMode = false;
+        document.getElementById('surprise-mode-toggle').checked = false;
+        
+        const landing = document.getElementById('landing-page');
+        const app = document.getElementById('app-content');
+
+        // 2. Fade Out App (Fixing the "sudden disappearance")
+        // Maintain layout while fading
+        app.style.display = 'block'; 
+        app.style.opacity = '1'; 
+        
+        // Force reflow to ensure browser knows we are starting at opacity 1
+        void app.offsetWidth;
+        
+        // Now fade
+        app.style.opacity = '0';
+
+        setTimeout(() => {
+            // MOVED FROM START:
+            document.body.classList.remove('swipe-mode-active'); 
+
+            // 3. Reset App State (Hidden)
+            app.classList.remove('visible');
+            app.style.display = 'none';
+            app.style.opacity = ''; // Clear inline
+            
+            // 4. Fade In Landing
+            landing.style.display = 'flex';
+            void landing.offsetWidth;
+            landing.classList.remove('hidden');
+        }, 500);
+    }
+
+    setMode(mode) {
+        this.currentMode = mode;
+
+        // Show/hide appropriate containers
+        document.getElementById('main-grid').style.display = mode === 'fixture' ? 'grid' : 'none';
+        const swipeContainer = document.getElementById('swipe-container');
+        swipeContainer.classList.toggle('active', mode === 'swipe');
+        document.getElementById('fdr-legend').style.display = mode === 'fixture' ? 'block' : 'none';
+
+        // Toggle overflow and active class for locked view
+        if (mode === 'swipe') {
+            document.body.style.overflow = 'hidden';
+            document.body.classList.add('swipe-mode-active');
+            this.resetAll(); // Reset when entering swipe mode to start fresh
+            this.generateSwipeCards();
+            
+            // Accessibility: Focus management
+            setTimeout(() => {
+               swipeContainer.focus();
+            }, 100);
+        } else {
+            document.body.style.overflow = 'auto'; // ensure scroll
+            document.body.classList.remove('swipe-mode-active');
+        }
+    }
+
+    generateSwipeCards() {
+        this.swipeCardData = [];
+        this.currentCardIndex = 0;
+
+        // Collect all fixtures from all teams
+        for (let teamKey in this.teams) {
+            this.teams[teamKey].fixtures.forEach((fixture, index) => {
+                this.swipeCardData.push({
+                    teamKey,
+                    fixtureIndex: index,
+                    team: this.teams[teamKey].name,
+                    fixture: fixture
+                });
+            });
+        }
+
+        // Shuffle for variety
+        this.swipeCardData.sort(() => Math.random() - 0.5);
+
+        document.getElementById('swipe-total').textContent = this.swipeCardData.length;
+        this.renderCurrentCard();
+    }
+
+    renderCurrentCard() {
+        const wrapper = document.getElementById('card-wrapper');
+        wrapper.innerHTML = '';
+
+        if (this.currentCardIndex >= this.swipeCardData.length) {
+            // All cards swiped - show dramatic reveal
+            this.showDramaticReveal();
+            return;
+        }
+
+        const cardData = this.swipeCardData[this.currentCardIndex];
+        const card = document.createElement('div');
+        card.className = 'swipe-card';
+        card.id = 'current-card';
+        // Make card focusable for accessibility if needed, though we rely on document keydown
+        card.setAttribute('tabindex', '0');
+
+        const fdrColors = {
+            1: 'background: var(--fdr-1);',
+            2: 'background: var(--fdr-2);',
+            3: 'background: var(--fdr-3); color: #333;',
+            4: 'background: var(--fdr-4);',
+            5: 'background: var(--fdr-5);'
+        };
+
+        card.innerHTML = `
+            <div class="card-team">${cardData.team}</div>
+            <div class="card-fixture">${cardData.fixture.opponent}</div>
+            <div class="card-venue">${cardData.fixture.venue === 'H' ? '🏠 Home' : '✈️ Away'}</div>
+            <div class="card-fdr" style="${fdrColors[cardData.fixture.fdr]}">
+                FDR: ${cardData.fixture.fdr}
+            </div>
+            <div class="card-date">${cardData.fixture.date}</div>
+        `;
+
+        wrapper.appendChild(card);
+        document.getElementById('swipe-current').textContent = this.currentCardIndex + 1;
+
+        // Update back button state
+        const backBtn = document.getElementById('swipe-back-btn');
+        if (backBtn) {
+            backBtn.disabled = this.currentCardIndex === 0;
+        }
+
+        // Add swipe listeners
+        this.addSwipeListeners(card);
+    }
+
+    addSwipeListeners(card) {
+        let startX, startY, currentX, currentY;
+        let isDragging = false;
+
+        const drag = (e) => {
+            if (!isDragging) return;
+            const touch = e.type === 'touchmove' ? e.touches[0] : e;
+            // IMPROVED: Prevent scrolling while swiping
+            if (e.cancelable) e.preventDefault();
+            
+            if (e.type === 'touchmove') {
+                 // Already handled above
+            } else {
+                 e.preventDefault(); 
+            }
+            
+            currentX = touch.clientX;
+            currentY = touch.clientY;
+            
+            const deltaX = currentX - startX;
+            const deltaY = currentY - startY;
+            const rotation = deltaX * 0.1;
+            
+            card.style.transform = `translate(${deltaX}px, ${deltaY}px) rotate(${rotation}deg)`;
+            
+            // Show visual indicator
+            card.classList.remove('show-win', 'show-draw', 'show-loss');
+            if (Math.abs(deltaX) > CONFIG.SWIPE_VISUAL_THRESHOLD || Math.abs(deltaY) > CONFIG.SWIPE_VISUAL_THRESHOLD) {
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    if (deltaX > 0) {
+                        card.classList.add('show-win');
+                    } else {
+                        card.classList.add('show-loss');
+                    }
+                } else if (deltaY < 0) {
+                    card.classList.add('show-draw');
+                }
+            }
+        };
+
+        const endDrag = (e) => {
+            if (!isDragging) return;
+            isDragging = false;
+
+            // Remove document listeners when dragging ends
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchend', endDrag);
+
+            const deltaX = currentX - startX;
+            const deltaY = currentY - startY;
+
+            // Clear visual indicators
+            card.classList.remove('show-win', 'show-draw', 'show-loss');
+
+            // Determine swipe direction
+            if (Math.abs(deltaX) > CONFIG.SWIPE_THRESHOLD || Math.abs(deltaY) > CONFIG.SWIPE_THRESHOLD) {
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    // Horizontal swipe
+                    if (deltaX > 0) {
+                        this.swipeCard('W', 'right');
+                    } else {
+                        this.swipeCard('L', 'left');
+                    }
+                } else {
+                    // Vertical swipe
+                    if (deltaY < 0) {
+                        this.swipeCard('D', 'up');
+                    } else {
+                        card.style.transform = '';
+                        card.classList.remove('swiping');
+                    }
+                }
+            } else {
+                card.style.transform = '';
+                card.classList.remove('swiping');
+            }
+        };
+
+        const startDrag = (e) => {
+            isDragging = true;
+            card.classList.add('swiping');
+            const touch = e.type === 'touchstart' ? e.touches[0] : e;
+            startX = currentX = touch.clientX;
+            startY = currentY = touch.clientY;
+
+            // Add document listeners only when dragging starts
+            document.addEventListener('mousemove', drag);
+            // IMPROVED: passive: false allows preventDefault
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+        };
+
+        card.addEventListener('mousedown', startDrag);
+        card.addEventListener('touchstart', startDrag);
+    }
+
+    swipeCard(result, direction) {
+        if (this.currentCardIndex >= this.swipeCardData.length) return;
+
+        const cardData = this.swipeCardData[this.currentCardIndex];
+        this.results[cardData.teamKey][cardData.fixtureIndex] = result;
+
+        const card = document.getElementById('current-card');
+        if (card) {
+            card.classList.remove('swiping');
+            
+            // Determine animation class
+            const resultToDirection = { 'W': 'right', 'D': 'up', 'L': 'left' };
+            const finalDirection = direction || resultToDirection[result];
+            const animClass = `swipe-${finalDirection}`;
+
+            card.classList.add(animClass);
+            
+            setTimeout(() => {
+                this.currentCardIndex++;
+                this.renderCurrentCard();
+            }, CONFIG.SWIPE_ANIMATION_MS);
+        }
+    }
+
+    goBackSwipe() {
+        if (this.currentCardIndex > 0) {
+            this.currentCardIndex--;
+            const cardData = this.swipeCardData[this.currentCardIndex];
+            this.results[cardData.teamKey][cardData.fixtureIndex] = null;
+            this.renderCurrentCard();
+        }
+    }
+
+    showDramaticReveal() {
+        // Calculate final standings
+        const tableData = this.calculateStandings();
+
+        // Find champion
+        const champion = tableData[0];
+
+        // Show overlay
+        const overlay = document.getElementById('reveal-overlay');
+        const revealTable = document.getElementById('reveal-table');
+        const revealMessage = document.getElementById('reveal-message');
+
+        // Show drum roll first
+        revealMessage.textContent = '🥁 Drum roll please... 🥁';
+        revealMessage.classList.add('drumroll');
+
+        revealTable.innerHTML = '';
+        tableData.forEach((team, index) => {
+            const position = index + 1;
+            const rowDiv = document.createElement('div');
+
+            let rowClass = 'reveal-row';
+            if (index === CONFIG.CHAMPION_INDEX) {
+                rowClass += ' champion';
+            }
+
+            rowDiv.className = rowClass;
+            rowDiv.innerHTML = `
+                <div class="reveal-pos">${position}</div>
+                <div class="reveal-team">${team.name}</div>
+                <div class="reveal-pts">${team.points} pts</div>
+            `;
+
+            revealTable.appendChild(rowDiv);
+        });
+
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        // Reveal outcome after 2.5 seconds
+        setTimeout(() => {
+            revealMessage.classList.remove('drumroll');
+
+            if (champion.teamKey === 'arsenal') {
+                revealMessage.innerHTML = "ARSENAL ARE CHAMPIONS! 🏆<br>History made! 🔴";
+                revealMessage.style.color = 'var(--arsenal-red)';
+            } else {
+                revealMessage.innerHTML = "ARSENAL BOTTLED IT! 🍼<br>Man City Win Again! 🔵";
+                revealMessage.style.color = 'var(--city-blue)';
+            }
+        }, 2500);
+    }
+
+    closeReveal() {
+        document.getElementById('reveal-overlay').classList.remove('active');
+        document.body.style.overflow = '';
+        this.setMode('fixture');
+    }
+
+    sharePrediction() {
+        const content = document.getElementById('reveal-content-box');
+        const actions = document.getElementById('reveal-actions');
+
+        // Temporarily hide actions for screenshot
+        actions.style.display = 'none';
+        content.style.backgroundColor = '#16213e'; // Ensure background is solid
+
+        html2canvas(content).then(canvas => {
+            // Restore UI
+            actions.style.display = 'flex';
+            content.style.backgroundColor = '';
+
+            canvas.toBlob(blob => {
+                const file = new File([blob], 'my-prediction.png', { type: 'image/png' });
+
+                if (navigator.share && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        title: 'Will Arsenal Bottle It?',
+                        text: 'Check out my title race prediction! 🏆',
+                        files: [file]
+                    }).catch(console.error);
+                } else {
+                    // Fallback to download
+                    const link = document.createElement('a');
+                    link.download = 'my-prediction.png';
+                    link.href = canvas.toDataURL();
+                    link.click();
+                }
+            });
+        });
+    }
+
+    toggleMiniTablePin() {
+        this.isMiniTablePinned = !this.isMiniTablePinned;
+        const btn = document.getElementById('pin-btn');
+        if(btn) btn.classList.toggle('active', this.isMiniTablePinned);
+    }
+
+    toggleMiniTableMinimize(isAuto = false) {
+        const table = document.getElementById('floatingTable');
+        const btn = document.getElementById('btn-minimize-table');
+        const isMinimized = table.classList.toggle('minimized');
+
+        if (isMinimized) {
+            if (!isAuto) this.minimizeCount++; // Only increment on manual close
+            btn.title = 'Expand table';
+            btn.setAttribute('aria-label', 'Expand table');
+        } else {
+            btn.title = 'Minimize table';
+            btn.setAttribute('aria-label', 'Minimize table');
+        }
+    }
+
+    showFloatingTable(prevStandings = null, currStandings = null) {
+        // NEW: Check Surprise Mode
+        if (this.surpriseMode) {
+            document.getElementById('floatingTable').classList.remove('show');
+            return;
+        }
+
+        const floatingTable = document.getElementById('floatingTable');
+        
+        // NEW: Auto-expand logic based on 3-strike rule
+        if (this.minimizeCount < 3) {
+            floatingTable.classList.remove('minimized');
+        }
+
+        const miniTableContent = document.getElementById('mini-table-content');
+
+        // Ensure Pin button exists - MOVED TO HTML STATICALLY
+        // let header = floatingTable.querySelector('.mini-table-header');
+        // if (!header.querySelector('.mini-table-pin')) { ... }
+
+        if (!currStandings) {
+            currStandings = this.calculateStandings();
+        }
+
+        // Create a map for previous positions and ranks
+        const prevRankMap = {};
+        const firstPositions = {};
+
+        if (prevStandings) {
+            prevStandings.forEach((team, index) => {
+                prevRankMap[team.teamKey] = index + 1;
+            });
+
+            // FLIP: Measure First
+            const rows = miniTableContent.querySelectorAll('.mini-table-row');
+            rows.forEach(row => {
+                const teamKey = row.dataset.team;
+                if (teamKey) {
+                    firstPositions[teamKey] = row.getBoundingClientRect().top;
+                }
+            });
+        }
+
+        // FLIP: Apply Last (Update DOM)
+        currStandings.forEach((team, index) => {
+            const position = index + 1;
+            let row = document.getElementById(`mini-row-${team.teamKey}`);
+
+            if (!row) {
+                row = document.createElement('div');
+                row.id = `mini-row-${team.teamKey}`;
+                row.dataset.team = team.teamKey;
+            }
+
+            let rowClass = 'mini-table-row';
+            if (index === CONFIG.CHAMPION_INDEX) {
+                rowClass += ' champion';
+            } else {
+                rowClass += ' runner-up';
+            }
+            row.className = rowClass;
+
+            // Determine rank change
+            let rankIndicator = '';
+            if (prevStandings) {
+                const prevPos = prevRankMap[team.teamKey];
+                if (prevPos > position) {
+                    rankIndicator = '<span class="rank-up">▲</span>';
+                } else if (prevPos < position) {
+                    rankIndicator = '<span class="rank-down">▼</span>';
+                } else {
+                    rankIndicator = '<span class="rank-no-change">-</span>';
+                }
+            }
+
+            row.innerHTML = `
+                <div class="mini-pos">${position}${rankIndicator}</div>
+                <div class="mini-team-name">${team.name}</div>
+                <div class="mini-pts">${team.points}</div>
+            `;
+
+            miniTableContent.appendChild(row); // Moves to end
+        });
+
+        // FLIP: Invert & Play
+        if (prevStandings) {
+            currStandings.forEach(team => {
+                const row = document.getElementById(`mini-row-${team.teamKey}`);
+                const newTop = row.getBoundingClientRect().top;
+                const oldTop = firstPositions[team.teamKey];
+
+                if (oldTop !== undefined) {
+                    const deltaY = oldTop - newTop;
+                    if (Math.abs(deltaY) > 0) {
+                        row.style.transform = `translateY(${deltaY}px)`;
+                        row.style.transition = 'none';
+
+                        requestAnimationFrame(() => {
+                            row.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'; // Bouncy effect
+                            row.style.transform = '';
+                        });
+                    }
+                }
+            });
+        }
+
+        // Show the floating table
+        floatingTable.classList.add('show');
+
+        // Clear existing timeout
+        if (this.miniTableTimeout) clearTimeout(this.miniTableTimeout);
+
+        if (!this.isMiniTablePinned) {
+            this.miniTableTimeout = setTimeout(() => {
+                if (!this.isMiniTablePinned) {
+                    floatingTable.classList.remove('show');
+                }
+            }, CONFIG.MINI_TABLE_TIMEOUT_MS);
+        }
+    }
+
+    scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+    window.titleRaceSim = new TitleRaceSimulator(TEAMS_DATA);
+});
+    </script>
+</body>
+</html>
