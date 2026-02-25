@@ -12,6 +12,13 @@ The Premier League season is squeaky bum time! 🍑 This site focuses on the tit
 
 Will the Gunners finally get their hands on the trophy? Or will the City machine crush their dreams once more? It's all in your hands! 🙌
 
+## ⚽ The Teams
+
+As we enter the run-in, here's how the land lies:
+
+- **🔴 Arsenal (68 pts)**: Currently top of the pile, but looking nervously over their shoulder. Can they hold their nerve?
+- **🔵 Man City (67 pts)**: Breathing down Arsenal's neck. The inevitable winning streak machine is booting up. Be afraid.
+
 ## 🕹️ How It Works
 
 You've got two ways to play the gaffer:
@@ -24,20 +31,19 @@ For the tactical geniuses who like to see the whole board.
 - Includes a **Fixture Difficulty Rating (FDR)** so you know if it's a walk in the park 🌳 or a trip to Anfield 🏟️.
 
 ### 2. 👆 Swipe Mode
-For the Tinder generation!
-- Focus on one game at a time.
-- **Swipe Right** for a Win! 👉✅
-- **Swipe Left** for a Loss! 👈❌
+For the Tinder generation! This mode presents each fixture as a swipeable card.
+- **The Cards**: Each card shows the opponent, venue (Home/Away), and the FDR (difficulty).
+- **Swipe Right** for a Win! 👉✅ (Arsenal win / City win)
+- **Swipe Left** for a Loss! 👈❌ (Arsenal lose / City lose)
 - **Swipe Up** for a Draw! 👆🤝
-- Or use the big buttons if your thumb is tired.
-- Get a dramatic **FINAL TABLE REVEAL** at the end! 🥁
+- **The Reveal**: Once you've swiped through all fixtures, a dramatic **FINAL TABLE REVEAL** sequence plays out to show you who takes the crown! 🥁
 
 ## 📸 Share Your Predictions
 
 Once you've sealed their fate, generate a snapshot of the final table!
 - **Share Prediction**: Creates a slick image of the table to roast your mates in the group chat. 📱💬
 
-## 🛠️ Under the Bonnet (Open Source)
+## 🛠️ Tech Stack & Credits
 
 Big shout out to the open source wizardry that makes this tick:
 - **[html2canvas](https://html2canvas.hertzen.com/)**: The absolute legend that takes the screenshot of your prediction. 📸 Thanks for making us look good!
