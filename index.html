@@ -1365,8 +1365,8 @@
 
         .reveal-row {
             display: grid;
-            grid-template-columns: 60px 1fr 80px;
-            gap: 15px;
+            grid-template-columns: 50px 1fr 80px;
+            gap: 10px;
             padding: 15px;
             margin-bottom: 10px;
             border-radius: 12px;
@@ -1379,6 +1379,48 @@
 
         .reveal-row:nth-child(1) { animation-delay: 0.2s; }
         .reveal-row:nth-child(2) { animation-delay: 0.4s; }
+
+        .reveal-team-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            text-align: left;
+        }
+
+        .reveal-breakdown {
+            font-size: 0.9rem;
+            color: var(--grey-mid);
+            font-weight: 600;
+        }
+
+        .reveal-fixtures-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .reveal-fixture-abbr {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .reveal-fixture-abbr.W {
+            background: var(--win);
+            color: white;
+        }
+
+        .reveal-fixture-abbr.D {
+            background: var(--draw);
+        }
+
+        .reveal-fixture-abbr.L {
+            background: var(--loss);
+            color: white;
+        }
 
         .reveal-row.champion {
             background: rgba(255, 215, 0, 0.2);
@@ -2565,10 +2607,31 @@ class TitleRaceSimulator {
                 rowClass += ' champion';
             }
 
+            // Calculate W/D/L and map fixtures
+            const results = this.results[team.teamKey];
+            const fixtures = this.teams[team.teamKey].fixtures;
+            let w = 0, d = 0, l = 0;
+            let fixturesHtml = '';
+
+            results.forEach((result, i) => {
+                if (result === 'W') w++;
+                if (result === 'D') d++;
+                if (result === 'L') l++;
+
+                if (result) {
+                    const opponentAbbr = fixtures[i].opponent.substring(0, 3).toUpperCase();
+                    fixturesHtml += `<span class="reveal-fixture-abbr ${result}">${opponentAbbr}</span>`;
+                }
+            });
+
             rowDiv.className = rowClass;
             rowDiv.innerHTML = `
                 <div class="reveal-pos">${position}</div>
-                <div class="reveal-team">${team.name}</div>
+                <div class="reveal-team-info">
+                    <div class="reveal-team">${team.name}</div>
+                    <div class="reveal-breakdown">${w}W ${d}D ${l}L</div>
+                    <div class="reveal-fixtures-list">${fixturesHtml}</div>
+                </div>
                 <div class="reveal-pts">${team.points} pts</div>
             `;
 
@@ -2606,7 +2669,7 @@ class TitleRaceSimulator {
         actions.style.display = 'none';
         content.style.backgroundColor = '#16213e'; // Ensure background is solid
 
-        html2canvas(content).then(canvas => {
+        html2canvas(content, { useCORS: true, scale: 2, backgroundColor: '#16213e' }).then(canvas => {
             // Restore UI
             actions.style.display = 'flex';
             content.style.backgroundColor = '';
@@ -2614,12 +2677,19 @@ class TitleRaceSimulator {
             canvas.toBlob(blob => {
                 const file = new File([blob], 'my-prediction.png', { type: 'image/png' });
 
-                if (navigator.share && navigator.canShare({ files: [file] })) {
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                     navigator.share({
                         title: 'Will Arsenal Bottle It?',
                         text: 'Check out my title race prediction! 🏆',
                         files: [file]
-                    }).catch(console.error);
+                    }).catch(err => {
+                        console.error('Share failed:', err);
+                        // Fallback to download on error (e.g. user cancellation or unsupported file share)
+                        const link = document.createElement('a');
+                        link.download = 'my-prediction.png';
+                        link.href = canvas.toDataURL();
+                        link.click();
+                    });
                 } else {
                     // Fallback to download
                     const link = document.createElement('a');
