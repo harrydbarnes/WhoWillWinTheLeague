@@ -2664,9 +2664,10 @@ class TitleRaceSimulator {
     sharePrediction() {
         const content = document.getElementById('reveal-content-box');
         const actions = document.getElementById('reveal-actions');
+        const originalContentBackground = content.style.backgroundColor;
         const restoreUI = () => {
             actions.style.display = 'flex';
-            content.style.backgroundColor = '';
+            content.style.backgroundColor = originalContentBackground;
         };
         const downloadCanvas = (canvas) => {
             const link = document.createElement('a');
@@ -2682,6 +2683,7 @@ class TitleRaceSimulator {
         html2canvas(content, { useCORS: true, scale: 2, backgroundColor: '#16213e' }).then(canvas => {
             canvas.toBlob(blob => {
                 if (blob === null) {
+                    console.warn('canvas.toBlob returned null, falling back to download');
                     downloadCanvas(canvas);
                     return;
                 }
@@ -2706,7 +2708,7 @@ class TitleRaceSimulator {
                 }
             });
         }).catch(err => {
-            console.error('Could not create prediction image:', err);
+            console.error('html2canvas failed to create prediction image:', err);
         }).finally(() => {
             restoreUI();
         });
