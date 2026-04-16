@@ -2687,7 +2687,7 @@ class TitleRaceSimulator {
                         // Fallback to download on error (e.g. user cancellation or unsupported file share)
                         const link = document.createElement('a');
                         link.download = 'my-prediction.png';
-                        link.href = canvas.toDataURL();
+                        link.href = URL.createObjectURL(blob);
                         link.click();
                     });
                 } else {
