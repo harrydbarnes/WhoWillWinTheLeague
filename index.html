@@ -2664,17 +2664,28 @@ class TitleRaceSimulator {
     sharePrediction() {
         const content = document.getElementById('reveal-content-box');
         const actions = document.getElementById('reveal-actions');
+        const restoreUI = () => {
+            actions.style.display = 'flex';
+            content.style.backgroundColor = '';
+        };
+        const downloadCanvas = (canvas) => {
+            const link = document.createElement('a');
+            link.download = 'my-prediction.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        };
 
         // Temporarily hide actions for screenshot
         actions.style.display = 'none';
         content.style.backgroundColor = '#16213e'; // Ensure background is solid
 
         html2canvas(content, { useCORS: true, scale: 2, backgroundColor: '#16213e' }).then(canvas => {
-            // Restore UI
-            actions.style.display = 'flex';
-            content.style.backgroundColor = '';
-
             canvas.toBlob(blob => {
+                if (blob == null) {
+                    downloadCanvas(canvas);
+                    return;
+                }
+
                 const file = new File([blob], 'my-prediction.png', { type: 'image/png' });
 
                 if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -2683,21 +2694,20 @@ class TitleRaceSimulator {
                         text: 'Check out my title race prediction! 🏆',
                         files: [file]
                     }).catch(err => {
+                        if (err && err.name === 'AbortError') return;
                         console.error('Share failed:', err);
-                        // Fallback to download on error (e.g. user cancellation or unsupported file share)
-                        const link = document.createElement('a');
-                        link.download = 'my-prediction.png';
-                        link.href = URL.createObjectURL(blob);
-                        link.click();
+                        // Fallback to download on non-cancel errors
+                        downloadCanvas(canvas);
                     });
                 } else {
                     // Fallback to download
-                    const link = document.createElement('a');
-                    link.download = 'my-prediction.png';
-                    link.href = canvas.toDataURL();
-                    link.click();
+                    downloadCanvas(canvas);
                 }
             });
+        }).catch(err => {
+            console.error('Could not create prediction image:', err);
+        }).finally(() => {
+            restoreUI();
         });
     }
 
