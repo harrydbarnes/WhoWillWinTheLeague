@@ -2681,7 +2681,7 @@ class TitleRaceSimulator {
 
         html2canvas(content, { useCORS: true, scale: 2, backgroundColor: '#16213e' }).then(canvas => {
             canvas.toBlob(blob => {
-                if (blob == null) {
+                if (blob === null) {
                     downloadCanvas(canvas);
                     return;
                 }
@@ -2694,6 +2694,7 @@ class TitleRaceSimulator {
                         text: 'Check out my title race prediction! 🏆',
                         files: [file]
                     }).catch(err => {
+                        // UI restoration is handled in the outer .finally()
                         if (err && err.name === 'AbortError') return;
                         console.error('Share failed:', err);
                         // Fallback to download on non-cancel errors
