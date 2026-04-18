@@ -1214,6 +1214,11 @@
             opacity: 0;
         }
 
+        .swipe-card.swipe-down {
+            transform: translateY(150%) rotate(-10deg);
+            opacity: 0;
+        }
+
         .card-team {
             font-family: 'Oswald', sans-serif;
             font-size: 1.5rem;
@@ -1678,7 +1683,7 @@
                 <div class="swipe-progress-text">
                     <div><span class="current" id="swipe-current">1</span> / <span id="swipe-total">16</span></div>
                     <div class="swipe-hint" style="margin-top: 10px; font-size: 0.9rem;">
-                        Swipe or use Arrow Keys (← Loss, ↑ Draw, → Win)
+                        Swipe or use Arrow Keys (← Loss, ↑/↓ Draw, → Win)
                     </div>
                 </div>
                 <button class="swipe-exit-btn" id="btn-exit-swipe" title="Exit Swipe Mode" aria-label="Exit Swipe Mode"><span aria-hidden="true">✕</span></button>
@@ -2025,7 +2030,7 @@ class TitleRaceSimulator {
         if (this.currentMode !== 'swipe') return;
 
         // Prevent default scrolling behaviour for arrow keys
-        if (['ArrowLeft', 'ArrowRight', 'ArrowUp'].includes(e.key)) {
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
             e.preventDefault();
 
             // Debounce to prevent accidental double-swipes
@@ -2036,6 +2041,7 @@ class TitleRaceSimulator {
             if (e.key === 'ArrowLeft') this.swipeCard('L', 'left');
             if (e.key === 'ArrowRight') this.swipeCard('W', 'right');
             if (e.key === 'ArrowUp') this.swipeCard('D', 'up');
+            if (e.key === 'ArrowDown') this.swipeCard('D', 'down');
 
             // Release debounce
             setTimeout(() => { this.isSwipingKey = false; }, CONFIG.SWIPE_KEY_DEBOUNCE_MS);
@@ -2130,18 +2136,54 @@ class TitleRaceSimulator {
         );
     }
 
+    getLinkedFixture(teamKey, fixtureIndex) {
+        const fixture = this.teams[teamKey].fixtures[fixtureIndex];
+
+        // Find the opponent's teamKey
+        const opponentKey = Object.keys(this.teams).find(key => this.teams[key].name === fixture.opponent);
+
+        if (opponentKey) {
+            // Find the matching fixture in the opponent's list
+            const linkedIndex = this.teams[opponentKey].fixtures.findIndex(f =>
+                f.opponent === this.teams[teamKey].name && f.date === fixture.date
+            );
+
+            if (linkedIndex !== -1) {
+                return {
+                    teamKey: opponentKey,
+                    fixtureIndex: linkedIndex
+                };
+            }
+        }
+        return null;
+    }
+
     setResult(team, fixtureIndex, result) {
         const prevStandings = this.calculateStandings();
 
+        // Calculate the inverse result for the linked match
+        const inverseResult = { 'W': 'L', 'L': 'W', 'D': 'D' };
+        const linkedFixture = this.getLinkedFixture(team, fixtureIndex);
+
         if (this.results[team][fixtureIndex] === result) {
             this.results[team][fixtureIndex] = null;
+            if (linkedFixture) {
+                this.results[linkedFixture.teamKey][linkedFixture.fixtureIndex] = null;
+            }
         } else {
             this.results[team][fixtureIndex] = result;
+            if (linkedFixture) {
+                this.results[linkedFixture.teamKey][linkedFixture.fixtureIndex] = inverseResult[result];
+            }
         }
 
         const currStandings = this.calculateStandings();
 
         this.updateFixtureUI(team, fixtureIndex);
+        if (linkedFixture) {
+            this.updateFixtureUI(linkedFixture.teamKey, linkedFixture.fixtureIndex);
+        }
+
         this.updateTable(currStandings);
         this.showFloatingTable(prevStandings, currStandings);
 
@@ -2381,16 +2423,34 @@ class TitleRaceSimulator {
     generateSwipeCards() {
         this.swipeCardData = [];
         this.currentCardIndex = 0;
+        const processedMutualFixtures = new Set();
 
         // Collect all fixtures from all teams
         for (let teamKey in this.teams) {
             this.teams[teamKey].fixtures.forEach((fixture, index) => {
-                this.swipeCardData.push({
-                    teamKey,
-                    fixtureIndex: index,
-                    team: this.teams[teamKey].name,
-                    fixture: fixture
-                });
+                let addCard = true;
+                const linkedFixture = this.getLinkedFixture(teamKey, index);
+
+                if (linkedFixture) {
+                    // Create a unique key for the mutual fixture, e.g. "team1-team2-date"
+                    const sortedTeams = [teamKey, linkedFixture.teamKey].sort();
+                    const matchKey = `${sortedTeams[0]}-${sortedTeams[1]}-${fixture.date}`;
+
+                    if (processedMutualFixtures.has(matchKey)) {
+                        addCard = false;
+                    } else {
+                        processedMutualFixtures.add(matchKey);
+                    }
+                }
+
+                if (addCard) {
+                    this.swipeCardData.push({
+                        teamKey,
+                        fixtureIndex: index,
+                        team: this.teams[teamKey].name,
+                        fixture: fixture
+                    });
+                }
             });
         }
 
@@ -2483,7 +2543,7 @@ class TitleRaceSimulator {
                     } else {
                         card.classList.add('show-loss');
                     }
-                } else if (deltaY < 0) {
+                } else {
                     card.classList.add('show-draw');
                 }
             }
@@ -2519,8 +2579,7 @@ class TitleRaceSimulator {
                     if (deltaY < 0) {
                         this.swipeCard('D', 'up');
                     } else {
-                        card.style.transform = '';
-                        card.classList.remove('swiping');
+                        this.swipeCard('D', 'down');
                     }
                 }
             } else {
@@ -2554,6 +2613,12 @@ class TitleRaceSimulator {
         const cardData = this.swipeCardData[this.currentCardIndex];
         this.results[cardData.teamKey][cardData.fixtureIndex] = result;
 
+        const linkedFixture = this.getLinkedFixture(cardData.teamKey, cardData.fixtureIndex);
+        if (linkedFixture) {
+            const inverseResult = { 'W': 'L', 'L': 'W', 'D': 'D' };
+            this.results[linkedFixture.teamKey][linkedFixture.fixtureIndex] = inverseResult[result];
+        }
+
         const card = document.getElementById('current-card');
         if (card) {
             card.classList.remove('swiping');
@@ -2577,6 +2642,12 @@ class TitleRaceSimulator {
             this.currentCardIndex--;
             const cardData = this.swipeCardData[this.currentCardIndex];
             this.results[cardData.teamKey][cardData.fixtureIndex] = null;
+
+            const linkedFixture = this.getLinkedFixture(cardData.teamKey, cardData.fixtureIndex);
+            if (linkedFixture) {
+                this.results[linkedFixture.teamKey][linkedFixture.fixtureIndex] = null;
+            }
+
             this.renderCurrentCard();
         }
     }
