@@ -2140,13 +2140,7 @@ class TitleRaceSimulator {
         const fixture = this.teams[teamKey].fixtures[fixtureIndex];
 
         // Find the opponent's teamKey
-        let opponentKey = null;
-        for (let key in this.teams) {
-            if (this.teams[key].name === fixture.opponent) {
-                opponentKey = key;
-                break;
-            }
-        }
+        const opponentKey = Object.keys(this.teams).find(key => this.teams[key].name === fixture.opponent);
 
         if (opponentKey) {
             // Find the matching fixture in the opponent's list
