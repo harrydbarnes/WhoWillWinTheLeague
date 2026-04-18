@@ -1214,6 +1214,11 @@
             opacity: 0;
         }
 
+        .swipe-card.swipe-down {
+            transform: translateY(150%) rotate(-10deg);
+            opacity: 0;
+        }
+
         .card-team {
             font-family: 'Oswald', sans-serif;
             font-size: 1.5rem;
@@ -1678,7 +1683,7 @@
                 <div class="swipe-progress-text">
                     <div><span class="current" id="swipe-current">1</span> / <span id="swipe-total">16</span></div>
                     <div class="swipe-hint" style="margin-top: 10px; font-size: 0.9rem;">
-                        Swipe or use Arrow Keys (← Loss, ↑ Draw, → Win)
+                        Swipe or use Arrow Keys (← Loss, ↑/↓ Draw, → Win)
                     </div>
                 </div>
                 <button class="swipe-exit-btn" id="btn-exit-swipe" title="Exit Swipe Mode" aria-label="Exit Swipe Mode"><span aria-hidden="true">✕</span></button>
@@ -2025,7 +2030,7 @@ class TitleRaceSimulator {
         if (this.currentMode !== 'swipe') return;
 
         // Prevent default scrolling behaviour for arrow keys
-        if (['ArrowLeft', 'ArrowRight', 'ArrowUp'].includes(e.key)) {
+        if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
             e.preventDefault();
 
             // Debounce to prevent accidental double-swipes
@@ -2036,6 +2041,7 @@ class TitleRaceSimulator {
             if (e.key === 'ArrowLeft') this.swipeCard('L', 'left');
             if (e.key === 'ArrowRight') this.swipeCard('W', 'right');
             if (e.key === 'ArrowUp') this.swipeCard('D', 'up');
+            if (e.key === 'ArrowDown') this.swipeCard('D', 'down');
 
             // Release debounce
             setTimeout(() => { this.isSwipingKey = false; }, CONFIG.SWIPE_KEY_DEBOUNCE_MS);
@@ -2543,7 +2549,7 @@ class TitleRaceSimulator {
                     } else {
                         card.classList.add('show-loss');
                     }
-                } else if (deltaY < 0) {
+                } else {
                     card.classList.add('show-draw');
                 }
             }
@@ -2579,8 +2585,7 @@ class TitleRaceSimulator {
                     if (deltaY < 0) {
                         this.swipeCard('D', 'up');
                     } else {
-                        card.style.transform = '';
-                        card.classList.remove('swiping');
+                        this.swipeCard('D', 'down');
                     }
                 }
             } else {
